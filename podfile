@@ -1,0 +1,7 @@
+
+platform :ios, '10.0' #手机的系统
+target 'gaodemap' do
+pod 'AMap3DMap'  #3D地图SDK
+pod 'AMapSearch' #搜索功能
+pod ‘AMapLocation’
+end
