@@ -156,11 +156,12 @@ class DisplayViewController: UIViewController, MAMapViewDelegate {
         
         return nil
     }
-    
+       //通过addOverlay绘制路径时，会有一个函数回调
     func mapView(_ mapView: MAMapView, rendererFor overlay: MAOverlay) -> MAOverlayRenderer? {
         
         if overlay.isKind(of: MAPolyline.self) {
             let renderer: MAPolylineRenderer = MAPolylineRenderer(overlay: overlay)
+            //线路绘制的颜色和粗细
             renderer.strokeColor = UIColor.red
             renderer.lineWidth = 6.0
             
