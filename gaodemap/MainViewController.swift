@@ -18,6 +18,16 @@ class MainViewController: UIViewController, MAMapViewDelegate {
     var imageNotLocate: UIImage!
     var tipView: TipView!
     var statusView: StatusView!
+    //Route方法
+    //Route.addLocation()
+    //Route.title()
+    //Route.detail() 
+    //Route.startLocation()
+    //Route.endLocation()
+    //Route.totalDistance()
+    //Route.totalDuration()
+    //Route.formattedDuration()
+    //Route.coordinates()
     var currentRoute: Route?
     
     override func viewDidLoad() {
@@ -33,7 +43,9 @@ class MainViewController: UIViewController, MAMapViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        //开始定位
         mapView.showsUserLocation = true
+        //userTrackingMode为定位的方式，有三种， MAUserTrackingMode.follow是跟随用户位置移动的定位方式
         mapView.userTrackingMode = MAUserTrackingMode.follow
     }
     
@@ -49,8 +61,18 @@ class MainViewController: UIViewController, MAMapViewDelegate {
         
         mapView = MAMapView(frame: self.view.bounds)
         mapView.pausesLocationUpdatesAutomatically = false
+        //允许进行后台定位，保证之前有设置过App registers for location updates属性，否则会崩溃
         mapView.allowsBackgroundLocationUpdates = true
+        //我们无法直接控制位置管理器更新的频率，但可使用位置管理器的distanceFilter属性（单位米）进行间接控制。
+        //它指设备（水平或垂直）移动多少米后才将另一个更新发送给委托。定位要求的精度越高，distanceFilter属性的值越小，应用程序的耗电量就越大。
         mapView.distanceFilter = 10.0
+        //定位服务管理类CLLocationManager的desiredAccuracy属性表示精准度，有如下6种选择：
+        //kCLLocationAccuracyBestForNavigation ：精度最高，一般用于导航
+        //kCLLocationAccuracyBest ： 精确度最佳
+        //kCLLocationAccuracyNearestTenMeters ：精确度10m以内
+        //kCLLocationAccuracyHundredMeters ：精确度100m以内
+        //kCLLocationAccuracyKilometer ：精确度1000m以内
+        //kCLLocationAccuracyThreeKilometers ：精确度3000m以内
         mapView.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         mapView.delegate = self
         self.view.addSubview(mapView)
@@ -152,7 +174,7 @@ class MainViewController: UIViewController, MAMapViewDelegate {
         }
         
     }
-    
+   //左下角定位按钮
     func actionLocation(sender: UIButton) {
         print("actionLocation")
         
@@ -165,7 +187,7 @@ class MainViewController: UIViewController, MAMapViewDelegate {
             mapView!.setUserTrackingMode(MAUserTrackingMode.follow, animated: true)
         }
     }
-    
+    //点击界面search按钮，进入search界面
     func actionSearch(sender: UIButton) {
         
         let searchDemoController = SearchViewController(nibName: nil, bundle: nil)
@@ -173,14 +195,14 @@ class MainViewController: UIViewController, MAMapViewDelegate {
     }
     
     //MARK:- Helpers
-    
+    //增加位置点
     func addLocation(location: CLLocation?) {
         let success = currentRoute!.addLocation(location: location)
         if success {
             showTip(tip: "locations: \(currentRoute!.locations.count)")
         }
     }
-    
+    //保存线路
     func saveRoute() {
         
         if currentRoute == nil || currentRoute!.locations.count < 2 {
@@ -207,12 +229,12 @@ class MainViewController: UIViewController, MAMapViewDelegate {
     }
     
     //MARK:- MAMapViewDelegate
-    
+    // 地图每次有位置更新时的回调
     func mapView(_ mapView: MAMapView!, didUpdate userLocation: MAUserLocation!, updatingLocation: Bool) {
         if !updatingLocation {
             return
         }
-        
+        // 获取新的定位数据
         let location: CLLocation? = userLocation.location
         
         if location == nil {
@@ -221,8 +243,9 @@ class MainViewController: UIViewController, MAMapViewDelegate {
         
         if isRecording {
             // filter the result
+            //horizontalAccuracy 表示水平准确度，这么理解，它是以coordinate为圆心的半径，返回的值越小，证明准确度越好，如果是负数，则表示core location定位失败
             if userLocation.location.horizontalAccuracy < 100.0 {
-                
+                // 添加到保存定位点的数组
                 addLocation(location: userLocation.location)
             }
         }
